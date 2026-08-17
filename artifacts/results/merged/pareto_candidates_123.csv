@@ -1,0 +1,5 @@
+model,seed,logs_accuracy,logs_precision_anomaly,logs_recall_anomaly,logs_f1_anomaly,qa_semantic_similarity_mean,qa_semantic_similarity_std,qa_llm_judge_mean_0_5,qa_llm_judge_std_0_5,qa_judge_note
+grid_dare_plus_ties_drop_0.6,123,0.6975,0.7964860907759883,0.5386138613861386,0.6426461901949203,0.6180796027183533,0.16227100789546967,4.875,0.7806247497997998,LLM-as-Judge with unsloth/Llama-3.1-8B-Instruct on first 80 examples.
+grid_ties_topk_0.3,123,0.591,0.6218274111675127,0.48514851485148514,0.5450500556173526,0.6248570680618286,0.16628016531467438,5.0,0.0,LLM-as-Judge with unsloth/Llama-3.1-8B-Instruct on first 80 examples.
+grid_ties_topk_0.5,123,0.596,0.7589743589743589,0.29306930693069305,0.4228571428571429,0.6263326406478882,0.16653454303741455,4.9875,0.11110243021644485,LLM-as-Judge with unsloth/Llama-3.1-8B-Instruct on first 80 examples.
+grid_ties_topk_0.1,123,0.511,0.5701754385964912,0.12871287128712872,0.210016155088853,0.6271047592163086,0.16613952815532684,5.0,0.0,LLM-as-Judge with unsloth/Llama-3.1-8B-Instruct on first 80 examples.
