@@ -53,7 +53,6 @@ The repository has the following structure:
     ├── merged_adapters/        # generated merged adapters
     │   └── .gitkeep
     ├── analysis/
-    │   ├── task_vectors_all.csv
     │   ├── task_vectors_summary.csv
     │   ├── task_vectors_seed_*_per_tensor.csv
     │   ├── task_vectors_seed_*_summary.json
