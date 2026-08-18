@@ -105,8 +105,8 @@ Use the following environment to reproduce the experiments. In summary:
 
 | Component              | Version/Value                      |
 |------------------------|------------------------------------|
-| Python                 | 3.10                               |
-| CUDA (runtime)         | 12.8 (compiled in PyTorch 2.10.0)  |
+| Python                 | 3.10.11                            |
+| CUDA (runtime)         | 12.8                               |
 | PyTorch                | 2.10.0+cu128                       |
 | Transformers           | 5.5.0                              |
 | Unsloth                | 2026.7.1                           |
@@ -121,48 +121,73 @@ source .venv/bin/activate
 
 python -m pip install --upgrade pip wheel setuptools
 
-# Install specific PyTorch build (CUDA 12.8)
-pip install \
-    torch==2.10.0 \
-    torchvision==0.25.0 \
-    torchaudio==2.10.0 \
+# Install core dependencies
+pip install torch==2.10.0+cu128 \
     --index-url https://download.pytorch.org/whl/cu128
 
-# Install core dependencies
 pip install \
     "unsloth==2026.7.1" \
     "transformers==5.5.0" \
-    "xformers==0.0.35" \
+    "xformers==0.0.35"
+
+pip install \
     trl \
     peft \
     accelerate \
-    bitsandbytes \
+    bitsandbytes
+
+pip install \
     datasets \
+    pandas \
+    numpy
+
+pip install \
     safetensors \
     sentence-transformers \
-    scikit-learn \
-    pandas \
+    scikit-learn
+
+pip install \
     matplotlib \
-    tqdm \
-    jupyterlab \
-    tabulate
+    tqdm
 ```
 
-After installation, verify the setup by running (in Python):
+Run the following to verify your installation:
 
-```bash
-python - <<'PY'
-import sys, torch, transformers, unsloth
-print("Python:", sys.version.split()[0])
-print("PyTorch:", torch.__version__)
-print("CUDA runtime:", torch.version.cuda)
-print("GPU available:", torch.cuda.is_available())
-print("Transformers:", transformers.__version__)
-print("Unsloth:", getattr(unsloth, "__version__", "n/a"))
-PY
+```python 
+import torch
+import transformers
+import unsloth
+import trl
+import peft
+import accelerate
+import datasets
+
+print(f"PyTorch:           {torch.__version__}")
+print(f"CUDA runtime:      {torch.version.cuda}")
+print(f"CUDA available:    {torch.cuda.is_available()}")
+print(f"BFloat16 support:  {torch.cuda.is_bf16_supported()}")
+print(f"Transformers:      {transformers.__version__}")
+print(f"Unsloth:           {unsloth.__version__}")
+print(f"TRL:               {trl.__version__}")
+print(f"PEFT:              {peft.__version__}")
+print(f"Accelerate:        {accelerate.__version__}")
+print(f"Datasets:          {datasets.__version__}")
 ```
 
-Ensure output matches the expected versions (Python 3.10, PyTorch 2.10.0+cu128, etc.).
+Expected output:  
+```
+PyTorch:           2.10.0+cu128
+CUDA runtime:      12.8
+CUDA available:    True
+BFloat16 support:  True
+Transformers:      5.5.0
+Unsloth:           2026.7.1
+TRL:               0.24.0
+PEFT:              0.19.1
+Accelerate:        1.14.0
+Datasets:          4.3.0
+```
+
 
 ## Common model and training configuration
 
