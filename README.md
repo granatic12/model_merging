@@ -112,54 +112,48 @@ Use the following environment to reproduce the experiments. In summary:
 | xFormers               | 0.0.35                             |
 | Training precision     | bfloat16                           |
 
-To set up a matching environment, you can use the provided pip commands. Example (from repository README):
+### Setup
+
+1. **Create and activate a virtual environment:**
 
 ```bash
 python3.10 -m venv .venv
 source .venv/bin/activate
-
-python -m pip install --upgrade pip wheel setuptools
-
-# Install core dependencies
-pip install torch==2.10.0+cu128 \
-    --index-url https://download.pytorch.org/whl/cu128
-
-pip install \
-    "unsloth==2026.7.1" \
-    "transformers==5.5.0" \
-    "xformers==0.0.35"
-
-pip install \
-    trl \
-    peft \
-    accelerate \
-    bitsandbytes
-
-pip install \
-    datasets \
-    pandas \
-    numpy
-
-pip install \
-    safetensors \
-    sentence-transformers \
-    scikit-learn
-
-pip install \
-    matplotlib \
-    tqdm
 ```
 
-Run the following to verify your installation:
+2. **Install dependencies using the provided `requirements.txt`:**
+
+```bash
+python -m pip install --upgrade pip wheel setuptools
+pip install -r requirements.txt
+```
+
+The repository includes a `requirements.txt` file with all pinned dependencies.
+
+### Verify installation
+
+Run the following to verify your environment:
+
 
 ```python 
 import torch
-import transformers
 import unsloth
+import transformers
 import trl
 import peft
 import accelerate
 import datasets
+import bitsandbytes
+import xformers
+import safetensors
+import sentence_transformers
+import sklearn
+import pandas as pd
+import numpy as np
+import matplotlib
+import tqdm
+import huggingface_hub
+
 
 print(f"PyTorch:           {torch.__version__}")
 print(f"CUDA runtime:      {torch.version.cuda}")
@@ -171,6 +165,16 @@ print(f"TRL:               {trl.__version__}")
 print(f"PEFT:              {peft.__version__}")
 print(f"Accelerate:        {accelerate.__version__}")
 print(f"Datasets:          {datasets.__version__}")
+print(f"bitsandbytes:      {bitsandbytes.__version__}")
+print(f"xFormers:          {xformers.__version__}")
+print(f"sentence-transformers: {sentence_transformers.__version__}")
+print(f"scikit-learn:      {sklearn.__version__}")
+print(f"pandas:            {pd.__version__}")
+print(f"numpy:             {np.__version__}")
+print(f"safetensors:       {safetensors.__version__}")
+print(f"matplotlib:        {matplotlib.__version__}")
+print(f"tqdm:              {tqdm.__version__}")
+print(f"huggingface-hub:   {huggingface_hub.__version__}")
 ```
 
 Expected output:  
@@ -185,6 +189,16 @@ TRL:               0.24.0
 PEFT:              0.19.1
 Accelerate:        1.14.0
 Datasets:          4.3.0
+bitsandbytes:      0.49.2
+xFormers:          0.0.35
+sentence-transformers: 5.6.0
+scikit-learn:      1.7.2
+pandas:            2.3.3
+numpy:             1.24.3
+safetensors:       0.8.0
+matplotlib:        3.10.9
+tqdm:              4.68.3
+huggingface-hub:   1.22.0
 ```
 
 
