@@ -100,7 +100,7 @@ The repository has the following structure:
 
 ## Environment and installation
 
-Use the following environment to reproduce the experiments. In summary:
+The experiments were developed and reproduced using the following environment:
 
 | Component              | Version/Value                      |
 |------------------------|------------------------------------|
@@ -111,6 +111,8 @@ Use the following environment to reproduce the experiments. In summary:
 | Unsloth                | 2026.7.1                           |
 | xFormers               | 0.0.35                             |
 | Training precision     | bfloat16                           |
+
+The current training configuration requires a CUDA-capable GPU with bfloat16 support. The repository does not define a minimum VRAM requirement.  
 
 ### Setup
 
@@ -125,10 +127,12 @@ source .venv/bin/activate
 
 ```bash
 python -m pip install --upgrade pip wheel setuptools
-pip install -r requirements.txt
+python -m pip install torch==2.10.0 \
+        --index-url https://download.pytorch.org/whl/cu128
+python -m pip install -r requirements.txt
 ```
 
-The repository includes a `requirements.txt` file with all pinned dependencies.
+The repository pins the project-level dependencies used by the experiments in `requirements.txt`.  
 
 ### Verify installation
 
@@ -296,9 +300,8 @@ A typical workflow:
    source .venv/bin/activate
    jupyter lab
    ```
-2. **Set GPU device:**  
-   Some notebooks set `CUDA_VISIBLE_DEVICES` manually (e.g., to `"5"` or `"6"`). Before running, edit those cells to use a valid GPU index on your machine (e.g., `"0"` if you have one GPU). Do this **before** any cell imports `exp_common` or PyTorch.
-3. **Run notebooks in order (skip 01):**  
+
+2. **Run notebooks in order (skip 01):**  
    Execute the notebooks in the following sequence:
 
    ```
