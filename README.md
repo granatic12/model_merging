@@ -257,7 +257,7 @@ The prepared datasets are:
 | `qa_test_eval.jsonl`       | 500   | QA test                               |
 | `multitask_train_sft.jsonl`| 47000 | Combined Logs+QA train                 |
 
-The main evaluation uses **first 2000** examples from `logs_test_eval.jsonl` and **all 500** examples from `qa_test_eval.jsonl`.
+The main evaluation uses **first 2000** examples from `logs_test_eval.jsonl`. Semantic similarity is computed on 500 QA examples and LLM-as-Judge is computed on the first 80 QA examples from `qa_test_eval.jsonl`.
 
 ### Checksum verification
 
@@ -375,7 +375,7 @@ Sweep is done for seeds `42` and `123`. Output CSVs (grid metrics and Pareto can
 2. **Set up environment**: Create Python 3.10 venv and install dependencies. Verify versions.  
 3. **Run notebooks in order** (skipping 01): 00 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09.  
 4. **Monitor outputs**: Training notebooks will write LoRA adapter files to `artifacts/adapters/`; merged adapters go to `artifacts/merged_adapters/`.  
-6. **Compute metrics**: Evaluation notebooks will write CSVs under `artifacts/results/`.  
-7. **Check merged results**: Inspect `artifacts/results/merged/merged_metrics_mean_std.csv` for final metrics.  
+5. **Compute metrics**: Evaluation notebooks will write CSVs under `artifacts/results/`.  
+6. **Check merged results**: Inspect `artifacts/results/merged/merged_metrics_mean_std.csv` for final metrics.  
 
-Following the above steps using the provided code and data will reproduce the experiment results without requiring additional data or external resources.
+Following the above steps using the provided code and prepared data will reproduce the experiment pipeline without requiring additional dataset files.

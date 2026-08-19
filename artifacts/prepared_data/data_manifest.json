@@ -12,7 +12,6 @@
   "cpt_val_total": 250,
   "multitask_train_total": 47000,
   "files": {
-    "arxiv_qa_full.jsonl": "/notebooks/artifacts/prepared_data/arxiv_qa_full.jsonl",
     "cpt_train.jsonl": "/notebooks/artifacts/prepared_data/cpt_train.jsonl",
     "cpt_val.jsonl": "/notebooks/artifacts/prepared_data/cpt_val.jsonl",
     "logs_test_eval.jsonl": "/notebooks/artifacts/prepared_data/logs_test_eval.jsonl",
@@ -20,10 +19,7 @@
     "logs_val_sft.jsonl": "/notebooks/artifacts/prepared_data/logs_val_sft.jsonl",
     "multitask_train_sft.jsonl": "/notebooks/artifacts/prepared_data/multitask_train_sft.jsonl",
     "qa_test_eval.jsonl": "/notebooks/artifacts/prepared_data/qa_test_eval.jsonl",
-    "qa_test_eval_with_text.jsonl": "/notebooks/artifacts/prepared_data/qa_test_eval_with_text.jsonl",
     "qa_train_sft.jsonl": "/notebooks/artifacts/prepared_data/qa_train_sft.jsonl",
-    "qa_train_sft_with_text.jsonl": "/notebooks/artifacts/prepared_data/qa_train_sft_with_text.jsonl",
     "qa_val_sft.jsonl": "/notebooks/artifacts/prepared_data/qa_val_sft.jsonl",
-    "qa_val_sft_with_text.jsonl": "/notebooks/artifacts/prepared_data/qa_val_sft_with_text.jsonl"
   }
 }

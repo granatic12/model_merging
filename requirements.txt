@@ -1,5 +1,5 @@
-#PyTorch is installed separately because the CUDA 12.8 build is distributed
-#through the official PyTorch package index
+# PyTorch is installed separately because the CUDA 12.8 build is distributed
+# through the official PyTorch package index
 
 unsloth==2026.7.1
 transformers==5.5.0
