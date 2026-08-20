@@ -1,6 +1,6 @@
 # Model merging
 
-This repository contains the code, prepared data, raw measurements, aggregated results, and task-vector analyses accompanying the manuscript **“What Survives a Merge? Amplitude, Coverage, and an Adapter-Geometry Confound in Data-Free Composition of Domain and Task Updates.”** The study considers a decoupled-update setting in which a domain update obtained by continued pre-training and task-specific LoRA updates must be composed without retraining on the original task data. All update artifacts are represented relative to a common base-model anchor before merging.
+This repository contains the code, prepared data, raw measurements, aggregated results, and task-vector analyses accompanying the manuscript **“What Survives a Merge? Auditing Data-Free Composition of Domain and Task Updates.”** The study considers a decoupled-update setting in which a domain update obtained by continued pre-training and task-specific LoRA updates must be composed without retraining on the original task data. All update artifacts are represented relative to a common base-model anchor before merging.
 
 The experiments use `unsloth/Qwen3-4B-Instruct-2507` as the common base model. The official model card describes it as a 4B-parameter Qwen3 instruction model; the repository uses its 4-bit Unsloth loading path for training and evaluation.
 
