@@ -1,8 +1,8 @@
 # Model merging
 
-This repository contains the code, prepared data, raw measurements, aggregated results, and task-vector analyses accompanying the manuscript **“What Survives a Merge? Auditing Data-Free Composition of Domain and Task Updates.”** The study considers a decoupled-update setting in which a domain update obtained by continued pre-training and task-specific LoRA updates must be composed without retraining on the original task data. All update artifacts are represented relative to a common base-model anchor before merging.
+This repository contains the code, prepared data, raw measurements, aggregated results, and task-vector analyses accompanying the manuscript **“What Survives a Merge? Auditing Data-Free Composition of Domain and Task Updates.”** The study considers a decoupled-update setting in which a domain update obtained by continued pre-training and task-specific LoRA updates must be composed without retraining on the original task data. Merging is evaluated in two separate same-anchor scenarios. In the base-anchored scenario, the log and QA adapters are trained from the original base checkpoint and merged on that base. In the CPT-anchored scenario, fresh log and QA adapters are trained from the CPT-adapted checkpoint and merged on the same CPT anchor. In the latter scenario, CPT remains part of the backbone; it is not averaged as a third input to the merge.
 
-The experiments use `unsloth/Qwen3-4B-Instruct-2507` as the common base model. The repository uses its 4-bit loading path; evaluation applies adapters on top of the frozen quantized base rather than performing a full dequantized model merg
+The experiments use `unsloth/Qwen3-4B-Instruct-2507` as the original base model. Base-anchored training and evaluation use the 4-bit loading path, with LoRA adapters applied on top of the frozen quantized base. For CPT-anchored training, the code loads the backbone without 4-bit quantization, merges the CPT adapter into the model using `merge_and_unload()`, and then trains a fresh task adapter on the CPT-adapted backbone. During evaluation, the corresponding adapter loading path is used for each scenario.
 
 The artifact covers:
 
@@ -271,7 +271,7 @@ Unless overridden in a notebook, the shared default configuration (`exp_common.p
 Base model:        unsloth/Qwen3-4B-Instruct-2507
 Seeds:             42, 123, 777
 Maximum sequence:  2048
-Quantization:      4-bit model loading
+Model loading:     4-bit for base-anchored runs; BF16 for CPT-to-task runs
 Training dtype:    bfloat16
 
 LoRA rank:         16
@@ -458,6 +458,7 @@ Sweep is done for seeds `42`, `123`, `777`. Output CSVs are in `artifacts/analys
 
 ## Files intentionally omitted
 
+- Per-example evaluation JSON files, including raw generations, parsed predictions, and raw judge outputs, are intentionally omitted to keep the published artifact focused on run-level measurements and aggregated results.  
 - The repo **does not include** trained LoRA checkpoint files in `artifacts/adapters/` or `artifacts/merged_adapters/`. These will be generated when you run the training notebooks.
 - Directories `data/`, `artifacts/adapters/`, and `artifacts/merged_adapters/` contain `.gitkeep` placeholders to ensure they appear in the repo even if empty.
 
