@@ -35,21 +35,6 @@ The repository has the following structure:
 │   │   └── qa_on_cpt
 │   ├── analysis
 │   │   ├── coefficient_sweep
-│   │   │   ├── coefficient_lambda_0.25_seed_123.json
-│   │   │   ├── coefficient_lambda_0.25_seed_42.json
-│   │   │   ├── coefficient_lambda_0.25_seed_777.json
-│   │   │   ├── coefficient_lambda_0.33_seed_123.json
-│   │   │   ├── coefficient_lambda_0.33_seed_42.json
-│   │   │   ├── coefficient_lambda_0.33_seed_777.json
-│   │   │   ├── coefficient_lambda_0.5_seed_123.json
-│   │   │   ├── coefficient_lambda_0.5_seed_42.json
-│   │   │   ├── coefficient_lambda_0.5_seed_777.json
-│   │   │   ├── coefficient_lambda_0.75_seed_123.json
-│   │   │   ├── coefficient_lambda_0.75_seed_42.json
-│   │   │   ├── coefficient_lambda_0.75_seed_777.json
-│   │   │   ├── coefficient_lambda_1.0_seed_123.json
-│   │   │   ├── coefficient_lambda_1.0_seed_42.json
-│   │   │   ├── coefficient_lambda_1.0_seed_777.json
 │   │   │   ├── coefficient_sweep_agg.csv
 │   │   │   ├── coefficient_sweep_all.csv
 │   │   │   ├── coefficient_sweep_seed123.csv
@@ -71,9 +56,45 @@ The repository has the following structure:
 │   │   └── task_vectors_summary.csv
 │   ├── merged_adapters
 │   │   ├── base_logs_plus_qa
+│   │   │   ├── delta_w
+│   │   │   │   ├── dare_plus_model_soup
+│   │   │   │   ├── dare_plus_task_arithmetic
+│   │   │   │   ├── dare_plus_ties
+│   │   │   │   ├── model_soup
+│   │   │   │   ├── task_arithmetic
+│   │   │   │   └── ties
+│   │   │   └── factor
+│   │   │       ├── dare_plus_model_soup
+│   │   │       ├── dare_plus_task_arithmetic
+│   │   │       ├── dare_plus_ties
+│   │   │       ├── model_soup
+│   │   │       ├── task_arithmetic
+│   │   │       └── ties
 │   │   ├── coefficient_sweep
+│   │   │   └── delta_w
+│   │   │       ├── lambda_0.25
+│   │   │       ├── lambda_0.33
+│   │   │       ├── lambda_0.5
+│   │   │       ├── lambda_0.75
+│   │   │       └── lambda_1.0
 │   │   ├── cpt_anchor_logs_plus_qa
+│   │   │   ├── delta_w
+│   │   │   │   ├── dare_plus_model_soup
+│   │   │   │   ├── dare_plus_task_arithmetic
+│   │   │   │   ├── dare_plus_ties
+│   │   │   │   ├── model_soup
+│   │   │   │   ├── task_arithmetic
+│   │   │   │   └── ties
+│   │   │   └── factor
+│   │   │       ├── dare_plus_model_soup
+│   │   │       ├── dare_plus_task_arithmetic
+│   │   │       ├── dare_plus_ties
+│   │   │       ├── model_soup
+│   │   │       ├── task_arithmetic
+│   │   │       └── ties
 │   │   └── sequential_cpt_anchor
+│   │       └── factor
+│   │           └── task_arithmetic
 │   ├── prepared_data
 │   │   ├── cpt_train.jsonl
 │   │   ├── cpt_val.jsonl
@@ -97,9 +118,6 @@ The repository has the following structure:
 │       ├── all_metrics_raw.csv
 │       └── main_report_camera_ready.csv
 ├── data
-│   ├── cpt_corpus.jsonl
-│   ├── hdfs_test.jsonl
-│   └── hdfs_train.jsonl
 ├── 00_setup_common.ipynb
 ├── 01_prepare_data.ipynb
 ├── 02_train_cpt_lora.ipynb
@@ -113,7 +131,7 @@ The repository has the following structure:
 ├── 10_coefficient_sweep.ipynb
 ├── exp_common.py
 ├── README.md
-├── requirements.txt
+└── requirements.txt
 ```
 
 - **Notebooks**: Each numbered notebook contains code for a stage of the experiment (see below for details).
