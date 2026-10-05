@@ -20,6 +20,6 @@
     "multitask_train_sft.jsonl": "/notebooks/artifacts/prepared_data/multitask_train_sft.jsonl",
     "qa_test_eval.jsonl": "/notebooks/artifacts/prepared_data/qa_test_eval.jsonl",
     "qa_train_sft.jsonl": "/notebooks/artifacts/prepared_data/qa_train_sft.jsonl",
-    "qa_val_sft.jsonl": "/notebooks/artifacts/prepared_data/qa_val_sft.jsonl",
+    "qa_val_sft.jsonl": "/notebooks/artifacts/prepared_data/qa_val_sft.jsonl"
   }
 }
