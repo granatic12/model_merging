@@ -109,9 +109,8 @@ def sample_rows(path: Path, n: int, seed: int) -> List[dict]:
 def log_prompt(x: str) -> str:
     return (
         "You are an expert in HDFS log analysis. "
-        "Classify the given log message as either normal or anomalous. "
-        "Respond with exactly one label: OK or Anomaly. "
-        "Do not provide an explanation.\n\n"
+        "Your task is to classify the given log message as either normal or anomalous. "
+        "Respond with exactly one of the following labels: OK or Anomaly.\n\n"
         f"Log message:\n{x}\n\nLabel:"
     )
 
