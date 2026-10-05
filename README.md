@@ -2,7 +2,7 @@
 
 This repository contains the code, prepared data, raw measurements, aggregated results, and task-vector analyses accompanying the manuscript **“What Survives a Merge? Auditing Data-Free Composition of Domain and Task Updates.”** The study considers a decoupled-update setting in which a domain update obtained by continued pre-training and task-specific LoRA updates must be composed without retraining on the original task data. All update artifacts are represented relative to a common base-model anchor before merging.
 
-The experiments use `unsloth/Qwen3-4B-Instruct-2507` as the common base model. The official model card describes it as a 4B-parameter Qwen3 instruction model; the repository uses its 4-bit Unsloth loading path for training and evaluation.
+The experiments use `unsloth/Qwen3-4B-Instruct-2507` as the common base model. The repository uses its 4-bit loading path; evaluation applies adapters on top of the frozen quantized base rather than performing a full dequantized model merg
 
 The artifact covers:
 
@@ -10,19 +10,96 @@ The artifact covers:
 - task-specific LoRA training for HDFS log anomaly detection and technical QA;
 - CPT → task fine-tuning references;
 - multitask baselines;
+- factor-space and Delta-W merging experiments;
 - Task Arithmetic, Model Soup, TIES, DARE, and their compositions;
 - sequential adapter merging;
-- hyperparameter sweeps;
-- task-vector cosine similarity, sign conflicts, norms, and sparsity diagnostics;
+- coefficient sweeps over log-task update scaling;
+- task-vector geometry and audit diagnostics;
 - per-seed raw metrics and aggregated tables.
 
-The main experiment uses seeds `42`, `123`, and `777`. The technical QA branch is retained as a **generation-quality probe rather than evidence for successful task composition**, because the QA adapter did not learn a valid specialist in the reported experiment; this limitation is part of the manuscript's analysis rather than being hidden from the artifact.
+The main experiment uses seeds `42`, `123`, and `777`. The QA branch is treated as a generation-quality probe and is not used as evidence of successful task-task interference. The artifact also preserves unstable stochastic outcomes (including collapsed sparse-merge runs) instead of removing them.
 
 ## Repository structure
 
 The repository has the following structure:
 
 ```text
+├── artifacts
+│   ├── adapters
+│   │   ├── cpt
+│   │   ├── logs
+│   │   ├── logs_on_cpt
+│   │   ├── multitask
+│   │   ├── multitask_on_cpt
+│   │   ├── qa
+│   │   └── qa_on_cpt
+│   ├── analysis
+│   │   ├── coefficient_sweep
+│   │   │   ├── coefficient_lambda_0.25_seed_123.json
+│   │   │   ├── coefficient_lambda_0.25_seed_42.json
+│   │   │   ├── coefficient_lambda_0.25_seed_777.json
+│   │   │   ├── coefficient_lambda_0.33_seed_123.json
+│   │   │   ├── coefficient_lambda_0.33_seed_42.json
+│   │   │   ├── coefficient_lambda_0.33_seed_777.json
+│   │   │   ├── coefficient_lambda_0.5_seed_123.json
+│   │   │   ├── coefficient_lambda_0.5_seed_42.json
+│   │   │   ├── coefficient_lambda_0.5_seed_777.json
+│   │   │   ├── coefficient_lambda_0.75_seed_123.json
+│   │   │   ├── coefficient_lambda_0.75_seed_42.json
+│   │   │   ├── coefficient_lambda_0.75_seed_777.json
+│   │   │   ├── coefficient_lambda_1.0_seed_123.json
+│   │   │   ├── coefficient_lambda_1.0_seed_42.json
+│   │   │   ├── coefficient_lambda_1.0_seed_777.json
+│   │   │   ├── coefficient_sweep_agg.csv
+│   │   │   ├── coefficient_sweep_all.csv
+│   │   │   ├── coefficient_sweep_seed123.csv
+│   │   │   ├── coefficient_sweep_seed42.csv
+│   │   │   └── coefficient_sweep_seed777.csv
+│   │   ├── a_l2_hist.png
+│   │   ├── audit_base_task_pairs.csv
+│   │   ├── b_l2_hist.png
+│   │   ├── conflict_frac_hist.png
+│   │   ├── cosine_hist.png
+│   │   ├── merge_operator_audit.csv
+│   │   ├── task_vectors_all_per_tensor.csv
+│   │   ├── task_vectors_seed_123_per_tensor.csv
+│   │   ├── task_vectors_seed_123_summary.json
+│   │   ├── task_vectors_seed_42_per_tensor.csv
+│   │   ├── task_vectors_seed_42_summary.json
+│   │   ├── task_vectors_seed_777_per_tensor.csv
+│   │   ├── task_vectors_seed_777_summary.json
+│   │   └── task_vectors_summary.csv
+│   ├── merged_adapters
+│   │   ├── base_logs_plus_qa
+│   │   ├── coefficient_sweep
+│   │   ├── cpt_anchor_logs_plus_qa
+│   │   └── sequential_cpt_anchor
+│   ├── prepared_data
+│   │   ├── cpt_train.jsonl
+│   │   ├── cpt_val.jsonl
+│   │   ├── data_manifest.json
+│   │   ├── logs_test_eval.jsonl
+│   │   ├── logs_train_sft.jsonl
+│   │   ├── logs_val_sft.jsonl
+│   │   ├── multitask_train_sft.jsonl
+│   │   ├── qa_test_eval.jsonl
+│   │   ├── qa_train_sft.jsonl
+│   │   └── qa_val_sft.jsonl
+│   └── results
+│       ├── baselines
+│       │   ├── baseline_metrics_mean_std.csv
+│       │   └── baseline_metrics_raw.csv
+│       ├── merged
+│       │   ├── dare_plus_ties_seed_diagnostic.csv
+│       │   ├── merged_metrics_mean_std.csv
+│       │   └── merged_metrics_raw.csv
+│       ├── all_metrics_mean_std.csv
+│       ├── all_metrics_raw.csv
+│       └── main_report_camera_ready.csv
+├── data
+│   ├── cpt_corpus.jsonl
+│   ├── hdfs_test.jsonl
+│   └── hdfs_train.jsonl
 ├── 00_setup_common.ipynb
 ├── 01_prepare_data.ipynb
 ├── 02_train_cpt_lora.ipynb
@@ -33,49 +110,10 @@ The repository has the following structure:
 ├── 07_merge_adapters.ipynb
 ├── 08_eval_merged_and_grid.ipynb
 ├── 09_aggregate_results.ipynb
+├── 10_coefficient_sweep.ipynb
 ├── exp_common.py
-├── data/
-│   └── .gitkeep
-└── artifacts/
-    ├── prepared_data/
-    │   ├── cpt_train.jsonl
-    │   ├── cpt_val.jsonl
-    │   ├── logs_train_sft.jsonl
-    │   ├── logs_val_sft.jsonl
-    │   ├── logs_test_eval.jsonl
-    │   ├── qa_train_sft.jsonl
-    │   ├── qa_val_sft.jsonl
-    │   ├── qa_test_eval.jsonl
-    │   ├── multitask_train_sft.jsonl
-    │   └── data_manifest.json
-    ├── adapters/               # generated LoRA adapters
-    │   └── .gitkeep
-    ├── merged_adapters/        # generated merged adapters
-    │   └── .gitkeep
-    ├── analysis/
-    │   ├── task_vectors_summary.csv
-    │   ├── task_vectors_seed_*_per_tensor.csv
-    │   ├── task_vectors_seed_*_summary.json
-    │   ├── zeroing_after_methods.csv
-    │   ├── cosine_hist.png
-    │   ├── conflict_frac_hist.png
-    │   ├── logs_l2_hist.png
-    │   └── qa_l2_hist.png
-    └── results/
-        ├── all_metrics_raw.csv
-        ├── all_metrics_mean_std.csv
-        ├── main_report_mean_std.csv
-        ├── main_report_mean_std.md
-        ├── baselines/
-        │   ├── baseline_metrics_raw.csv
-        │   └── baseline_metrics_mean_std.csv
-        └── merged/
-            ├── merged_metrics_raw.csv
-            ├── merged_metrics_mean_std.csv
-            ├── grid_metrics_raw_42.csv
-            ├── grid_metrics_raw_123.csv
-            ├── pareto_candidates_42.csv
-            └── pareto_candidates_123.csv
+├── README.md
+├── requirements.txt
 ```
 
 - **Notebooks**: Each numbered notebook contains code for a stage of the experiment (see below for details).
@@ -87,16 +125,17 @@ The repository has the following structure:
 
 ## Notebook descriptions
 
-- **`00_setup_common.ipynb`**: Verify the environment, install dependencies, and set up common directories.  
-- **`01_prepare_data.ipynb`**: Sample and format raw data. **Not needed if you use `artifacts/prepared_data/` directly.**  
-- **`02_train_cpt_lora.ipynb`**: Train the LoRA adapter for continued pre-training (CPT) for each seed.  
-- **`03_train_sft_lora_base.ipynb`**: Train LoRA adapters on the base model for Logs, QA, and Multitask.  
-- **`04_train_sft_lora_on_cpt.ipynb`**: Fine-tune new task adapters (Logs and QA) on top of the merged CPT adapter.  
-- **`05_eval_baselines.ipynb`**: Evaluate baseline models (base, CPT, fine-tuned, multitask) on the test sets.  
-- **`06_task_vector_analysis.ipynb`**: Analyze the geometric properties of the LoRA adapter vectors (cosine similarity, norms, sparsity).  
-- **`07_merge_adapters.ipynb`**: Create merged adapters using various methods (Task Arithmetic, Model Soup, TIES, DARE, and their combinations).  
-- **`08_eval_merged_and_grid.ipynb`**: Evaluate merged adapters and perform a hyperparameter sweep over merge weights and sparsity.  
-- **`09_aggregate_results.ipynb`**: Aggregate raw metrics and produce summary tables.
+- **`00_setup_common.ipynb`**: environment checks and directory setup.  
+- **`01_prepare_data.ipynb`**: data preparation. Not needed when using `artifacts/prepared_data/`.
+- **`02_train_cpt_lora.ipynb`**: CPT adapter training. 
+- **`03_train_sft_lora_base.ipynb`**: task adapter and multitask training from the base model.
+- **`04_train_sft_lora_on_cpt.ipynb`**: fine-tune new task adapters (Logs and QA) on top of the merged CPT adapter.  
+- **`05_eval_baselines.ipynb`**: baseline evaluation. 
+- **`06_task_vector_analysis.ipynb`**: adapter geometry and audit analysis.  
+- **`07_merge_adapters.ipynb`**: create merged adapters using various methods.  
+- **`08_eval_merged_and_grid.ipynb`**: evaluate merged adapters.  
+- **`09_aggregate_results.ipynb`**: aggregate raw metrics and produce summary tables.
+- **`10_coefficient_sweep.ipynb`**: isolated coefficient sweep for the log update.
 
 ## Environment and installation
 
@@ -233,11 +272,34 @@ Target modules:
 
 Optimizer:         AdamW 8-bit
 LR scheduler:      cosine
-Epochs:            1
 Default batch:     2
 Gradient accum:    8  (effective batch size = 16 per GPU)
 Checkpoint criterion: lowest validation loss
 ```
+
+## LoRA merge convention
+
+The repository supports merging adapters in two spaces:
+
+1. **Factor space**
+   
+   Merge operators are applied directly to LoRA adapter tensors (`lora_A` and `lora_B`).  
+
+   Implemented operators:
+   - Model Soup
+   - Task Arithmetic
+   - TIES
+   - DARE combinations (implemented as DARE + operator)
+
+2. **Delta-W space**
+
+   LoRA adapters can also be converted into induced weight updates:
+
+   \[
+   \Delta W = scaling \cdot (B @ A)
+   \]
+
+   The Delta-W implementation first reconstructs the induced weight updates, merges these updates, and then converts the result back into a low-rank LoRA representation using SVD.
 
 ## Data and checksums
 
@@ -257,7 +319,7 @@ The prepared datasets are:
 | `qa_test_eval.jsonl`       | 500   | QA test                               |
 | `multitask_train_sft.jsonl`| 47000 | Combined Logs+QA train                 |
 
-The main evaluation uses **first 2000** examples from `logs_test_eval.jsonl`. Semantic similarity is computed on 500 QA examples and LLM-as-Judge is computed on the first 80 QA examples from `qa_test_eval.jsonl`.
+The main evaluation uses **first 2000** examples from `logs_test_eval.jsonl`. Semantic similarity is computed on 500 QA examples and LLM-as-Judge is computed on the first 100 QA examples from `qa_test_eval.jsonl`.
 
 ### Checksum verification
 
@@ -272,7 +334,7 @@ Expected SHA-256 sums:
 ```text
 503b69563b6ea24ba42bfa3b96d3cb27f8f3d0c89124919b04fd22eb5ab8237f *artifacts/prepared_data/cpt_train.jsonl
 75097f0fe1bd7687992792c3c6cd2af29602e38c7bab77cf71fb18dd74d151b5 *artifacts/prepared_data/cpt_val.jsonl
-64a18e23b9de899e2f27d5f72abdecd5efba0210d7492f03f51967a78fd4172e *artifacts/prepared_data/data_manifest.json
+e404da263e35461dbacd6974646d9b85205412d50d5f48f8c7c3cb60a127716c *artifacts/prepared_data/data_manifest.json
 a89890497dd8d11b4cd0245665fb14d119aead4f678eeb7eac2485c98c0352e5 *artifacts/prepared_data/logs_test_eval.jsonl
 a2e91f670b258add5f3f65f69ff53638188eed8133ae4ea03b2f26d353fcc540 *artifacts/prepared_data/logs_train_sft.jsonl
 c85b2c17ea1768a200bf3ecb960020dc99b22c8acfe2b14d82344bd340ba9252 *artifacts/prepared_data/logs_val_sft.jsonl
@@ -322,15 +384,26 @@ A typical workflow:
    08_eval_merged_and_grid.ipynb
            ↓
    09_aggregate_results.ipynb
+           ↓
+   10_coefficient_sweep.ipynb
    ```
 
    - **Skip `01_prepare_data.ipynb`** if you are using the provided `artifacts/prepared_data/` files (recommended).  
    - After training notebooks (02–04), checkpoint files will be saved under `artifacts/adapters/` (e.g., `artifacts/adapters/cpt/seed_42/`, etc.).  
-   - `05_eval_baselines.ipynb` evaluates all baseline models.  
-   - `06_task_vector_analysis.ipynb` computes vector geometry diagnostics.  
-   - `07_merge_adapters.ipynb` generates merged adapters (Task Arithmetic, Model Soup, TIES, DARE, etc.).  
-   - `08_eval_merged_and_grid.ipynb` evaluates merged models and runs a sweep.  
-   - `09_aggregate_results.ipynb` combines results into CSV/MD summary tables.
+
+### Reproducibility artifacts
+
+The repository stores intermediate and final artifacts required to inspect and reproduce the reported results.
+
+Important outputs include:
+
+* `artifacts/results/*_raw.csv` - raw metrics for individual runs and seeds;
+* `artifacts/results/*_mean_std.csv` - aggregated results with mean and standard deviation;
+* `artifacts/analysis/` - task-vector statistics, merge diagnostics, and coefficient sweep outputs;
+* `artifacts/prepared_data/` - prepared datasets used by downstream experiments.
+
+All main experiments are run with seeds: `42`, `123`, `777`.
+For configurations with high variance across seeds, per-seed results should be inspected instead of relying only on aggregate averages.
 
 ## Evaluation settings
 
@@ -342,20 +415,28 @@ A typical workflow:
   - Logs evaluation: `BATCH_LOGS = 16`  
   - QA evaluation: `BATCH_QA = 4`  
 
-- **Log evaluation:** Decoding is greedy with up to 8 tokens. Outputs containing anomaly-related keywords are labeled as `Anomaly`; others as `OK` (see `05_eval_baselines.ipynb` code).  
+- **Log evaluation:** Log anomaly detection is evaluated as a constrained generation task. The model is prompted to output exactly one label (`OK` or `Anomaly`) and is evaluated with greedy decoding (`do_sample=False`, `max_new_tokens=3`). 
+
+  Primary metrics use strict exact-label parsing:
+  - `OK` → `OK`
+  - `Anomaly` → `Anomaly`
+  - any other output → invalid/off-format prediction
+
+  Keyword-based parsing is reported only as a secondary sensitivity analysis. It maps outputs containing anomaly-related keywords (`anomaly`, `abnormal`, `error`, `fault`, `fail`) to `Anomaly`, and outputs containing normality-related keywords (`ok`, `normal`, `benign`) to `OK`.
+
+  The evaluation reports strict coverage and off-format rate in addition to classification metrics. Raw generations and parsed predictions are stored in evaluation JSON outputs.  
+
 - **QA evaluation:** Semantic similarity is computed using the `sentence-transformers/all-MiniLM-L6-v2` model. QA responses are additionally evaluated using an LLM-as-Judge approach with the `unsloth/Llama-3.1-8B-Instruct` model configured in the current evaluation code.
 
 ## Hyperparameter sweep
 
-Notebook `08_eval_merged_and_grid.ipynb` runs a parameter sweep with:
+Notebook `10_coefficient_sweep.ipynb` runs a parameter sweep with:
 
 ```python
-ALPHAS = [0.2, 0.4, 0.6, 0.8, 1.2]
-TOP_KS = [0.1, 0.2, 0.3, 0.5]
-DROP_RATES = [0.2, 0.4, 0.6]
+LAMBDAS = [0.25, 0.33, 0.5, 0.75, 1.0]
 ```
 
-Sweep is done for seeds `42` and `123`. Output CSVs (grid metrics and Pareto candidates) are in `artifacts/results/merged/`.
+Sweep is done for seeds `42`, `123`, `777`. Output CSVs are in `artifacts/analysis/coefficient_sweep`.
 
 ## Files intentionally omitted
 
@@ -364,18 +445,17 @@ Sweep is done for seeds `42` and `123`. Output CSVs (grid metrics and Pareto can
 
 ## Troubleshooting & notes
   
-- **ALPHA parameter:** The `07_merge_adapters.ipynb` default cell sets `ALPHA = 0.8`.  
+- **ALPHA parameter:** The `07_merge_adapters.ipynb` default cell sets `ALPHA = 1.0`.  
 
 - **Reproducing archived results:**  
-  The files in `artifacts/results/` contain the saved CSVs used in the manuscript. For example, `artifacts/results/all_metrics_raw.csv` has the full set of raw metrics for each model and seed. You can load these CSVs directly (no training needed) to recompute tables or plots. For instance:
+  The files in `artifacts/results/` contain the saved CSVs used in the manuscript. For example, `artifacts/results/all_metrics_raw.csv` has the full set of raw metrics for each model and seed. You can load these CSVs directly (no training needed) to recompute tables.
 
 ## Reproducibility checklist
 
 1. **Verify data**: Check SHA-256 sums and row counts of `artifacts/prepared_data/*`.  
 2. **Set up environment**: Create Python 3.10 venv and install dependencies. Verify versions.  
-3. **Run notebooks in order** (skipping 01): 00 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09.  
+3. **Run notebooks in order** (skipping 01): 00 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10.  
 4. **Monitor outputs**: Training notebooks will write LoRA adapter files to `artifacts/adapters/`; merged adapters go to `artifacts/merged_adapters/`.  
 5. **Compute metrics**: Evaluation notebooks will write CSVs under `artifacts/results/`.  
-6. **Check merged results**: Inspect `artifacts/results/merged/merged_metrics_mean_std.csv` for final metrics.  
 
 Following the above steps using the provided code and prepared data will reproduce the experiment pipeline without requiring additional dataset files.
